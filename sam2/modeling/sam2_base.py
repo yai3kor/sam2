@@ -899,7 +899,11 @@ class SAM2Base(torch.nn.Module):
 
         device = pred_masks.device
         # "max_obj_inds": object index of the object with the highest score at each location
+        if pred_masks.size(0) == 0:
+            raise ValueError("pred_masks is empty; no object masks to apply constraints to.")
+
         max_obj_inds = torch.argmax(pred_masks, dim=0, keepdim=True)
+        
         # "batch_obj_inds": object index of each object slice (along dim 0) in `pred_masks`
         batch_obj_inds = torch.arange(batch_size, device=device)[:, None, None, None]
         keep = max_obj_inds == batch_obj_inds
